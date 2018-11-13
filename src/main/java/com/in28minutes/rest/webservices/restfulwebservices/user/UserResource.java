@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +33,19 @@ public class UserResource {
 	}
 	
 	@GetMapping(path="/users/{id}")
-	public Optional<User> retrieveUser(@PathVariable Integer id){
+	public Resource<User> retrieveUser(@PathVariable Integer id){
 		Optional<User> user = service.findOne(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id-" + id);
 		}
-		return user;
-				
+		
+		//HATEOAS 
+		//Creating a link
+		Resource<User> resource = new Resource<User>(user.get());
+		ControllerLinkBuilder link = ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(this.getClass()).retrieveAllUsers());
+		resource.add(link.withRel("all-users"));
+		
+		return resource;
 	}
 	
 	@PostMapping(path="/users")
