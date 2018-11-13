@@ -33,4 +33,14 @@ public class UserDaoService {
 		users.add(user);
 		return user;
 	}
+	
+	public Optional<User> deleteById(Integer id) {
+		Optional<User> user = users.stream().filter(item -> item.getId() == id).findFirst();
+		if(user.isPresent()) {
+			users.remove(user.get());
+			return user;
+		}
+		return user;
+		
+	}
 }
