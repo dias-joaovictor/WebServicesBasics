@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.in28minutes.rest.webservices.restfulwebservices.exception.UserNotFoundException;
+import com.in28minutes.rest.webservices.restfulwebservices.post.Post;
 
 @RestController
 public class UserJPAResource {
 	
-	@Autowired
-	private UserDaoService service;
 	
 	@Autowired 
 	private UserRepository userRepository;
@@ -68,4 +66,14 @@ public class UserJPAResource {
 		}
 		userRepository.delete(user.get());
 	}
+	
+	@GetMapping(path="/jpa/users/{id}/posts")
+	public List<Post> retrieveAllPssts(@PathVariable int id){
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("id - " + id);
+		}
+		return user.get().getPosts();
+	}
+	
 }
